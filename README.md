@@ -1,1 +1,0 @@
-# Diyara_Gems
