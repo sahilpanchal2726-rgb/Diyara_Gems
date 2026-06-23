@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Diyara Gems & Jewels – Accountant Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/*─────────────────────────────────────────────
+  RESET & ROOT VARIABLES
+─────────────────────────────────────────────*/
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:       #0a2d6e;
+  --navy-dark:  #071e4a;
+  --blue:       #1a5bc4;
+  --blue-light: #3d7de0;
+  --blue-pale:  #e8f0fb;
+  --gold:       #c9a227;
+  --gold-light: #f0c940;
+  --bg:         #f0f4f8;
+  --white:      #ffffff;
+  --border:     #dde9f8;
+  --text:       #1a2340;
+  --text-muted: #6b80a5;
+  --green:      #1a8c4e;
+  --green-bg:   #e6f7ee;
+  --red:        #c0392b;
+  --red-bg:     #fdecea;
+  --orange:     #b06a00;
+  --orange-bg:  #fff3e0;
+  --purple:     #6c3fc5;
+  --shadow-sm:  0 2px 8px rgba(10,45,110,.07);
+  --shadow-md:  0 4px 20px rgba(10,45,110,.12);
+  --shadow-lg:  0 8px 40px rgba(10,45,110,.18);
+  --radius:     12px;
+  --radius-sm:  8px;
+}
+body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: 'DM Sans', sans-serif; }
+input, select, textarea { font-family: 'DM Sans', sans-serif; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c5d3e8; border-radius: 99px; }
+
+/*─────────────────────────────────────────────
+  LOGIN PAGE
+─────────────────────────────────────────────*/
+#login-page {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #071e4a 0%, #0a2d6e 45%, #1a5bc4 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; position: relative; overflow: hidden;
+}
+#login-page::before {
+  content: '💎';
+  position: absolute; font-size: 320px; opacity: .035;
+  top: -80px; right: -80px; transform: rotate(-20deg);
+  pointer-events: none; user-select: none;
+}
+#login-page::after {
+  content: '📊';
+  position: absolute; font-size: 180px; opacity: .04;
+  bottom: -40px; left: -40px; transform: rotate(15deg);
+  pointer-events: none; user-select: none;
+}
+.login-wrap {
+  width: 100%; max-width: 440px; position: relative; z-index: 1;
+}
+.login-card {
+  background: rgba(255,255,255,.98);
+  border-radius: 20px;
+  padding: 44px 40px 36px;
+  box-shadow: var(--shadow-lg);
+  animation: fadeSlideUp .5s ease both;
+}
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.login-logo { text-align: center; margin-bottom: 28px; }
+.login-logo .gem-icon { font-size: 52px; display: block; line-height: 1; }
+.login-logo h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; color: var(--navy); margin-top: 10px; line-height: 1.25;
+}
+.login-logo .role-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .8px;
+  padding: 4px 14px; border-radius: 99px; margin-top: 8px; text-transform: uppercase;
+}
+.login-divider { height: 1px; background: var(--border); margin: 22px 0 20px; }
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block; font-size: 12px; font-weight: 700;
+  color: #2a4070; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px;
+}
+.form-group input {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; background: #f7faff; color: var(--text); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-group input:focus {
+  border-color: var(--blue); background: #fff;
+  box-shadow: 0 0 0 3px rgba(26,91,196,.12);
+}
+.login-error {
+  background: var(--red-bg); border: 1px solid #f5b3ae;
+  color: #8b1a10; border-radius: var(--radius-sm);
+  padding: 10px 14px; font-size: 13px; margin-bottom: 14px; display: none;
+}
+.btn-login {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff; border: none; border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: .3px;
+  transition: opacity .2s, transform .1s; margin-top: 6px;
+}
+.btn-login:hover { opacity: .9; }
+.btn-login:active { transform: scale(.98); }
+.login-hint {
+  text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 18px;
+}
+.login-hint .demo-creds {
+  background: var(--blue-pale); border-radius: 8px; padding: 10px 14px; margin-top: 10px;
+  font-size: 12px; color: var(--navy); line-height: 1.7;
+}
+.login-hint .demo-creds b { color: var(--blue); }
+
+/*─────────────────────────────────────────────
+  APP LAYOUT
+─────────────────────────────────────────────*/
+#app { display: none; min-height: 100vh; }
+
+/* SIDEBAR */
+#sidebar {
+  width: 240px; background: var(--navy-dark); color: #fff;
+  display: flex; flex-direction: column;
+  position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 200; transition: transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: 4px 0 24px rgba(0,0,0,.35);
+}
+#sidebar .logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+  background: rgba(0,0,0,.25); flex-shrink: 0;
+}
+#sidebar .logo h1 { font-size: 15px; font-weight: 700; color: #fff; line-height: 1.35; }
+#sidebar .logo p  { font-size: 11px; color: #90b4f0; margin-top: 3px; }
+#sidebar .logo .role-tag {
+  display: inline-block; background: linear-gradient(135deg,#c9a227,#f0c940);
+  color: var(--navy-dark); font-size: 9px; font-weight: 800; padding: 3px 9px;
+  border-radius: 99px; margin-top: 7px; text-transform: uppercase; letter-spacing: .7px;
+}
+#sidebar nav { flex: 1; padding: 10px 0; overflow-y: auto; }
+#sidebar nav .nav-group {
+  padding: 12px 20px 4px; font-size: 10px; color: rgba(255,255,255,.38);
+  text-transform: uppercase; letter-spacing: 1.2px;
+}
+#sidebar nav button {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 20px;
+  background: none; border: none; color: #c8d9f4;
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  cursor: pointer; text-align: left;
+  transition: background .2s, color .2s;
+  border-left: 3px solid transparent;
+}
+#sidebar nav button:hover { background: rgba(255,255,255,.07); color: #fff; }
+#sidebar nav button.active {
+  background: rgba(26,91,196,.35); color: #fff; font-weight: 600;
+  border-left-color: var(--gold);
+}
+#sidebar nav button .icon { font-size: 15px; width: 20px; text-align: center; flex-shrink: 0; }
+.sidebar-footer {
+  padding: 14px 20px; border-top: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.sidebar-user { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.8); flex: 1; }
+.sidebar-user small { display: block; font-size: 10px; color: rgba(255,255,255,.4); font-weight: 400; }
+.btn-logout {
+  background: rgba(255,255,255,.1); border: none; color: #fff;
+  padding: 5px 10px; border-radius: 6px; font-size: 11px; cursor: pointer;
+  transition: background .2s;
+}
+.btn-logout:hover { background: var(--red); }
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 150;
+}
+
+/* MAIN */
+#main { margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+#topbar {
+  background: #fff; border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 56px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm);
+}
+.topbar-ham {
+  display: none; background: none; border: none;
+  font-size: 22px; cursor: pointer; color: var(--navy); padding: 4px;
+}
+.page-title { font-size: 18px; font-weight: 700; color: var(--navy); flex: 1; }
+.topbar-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  padding: 7px 12px; width: 260px;
+}
+.topbar-search input {
+  border: none; background: transparent; outline: none;
+  font-size: 13px; color: var(--text); width: 100%;
+}
+.topbar-badge {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: #fff; font-size: 11px; font-weight: 700; padding: 5px 14px;
+  border-radius: 99px; white-space: nowrap;
+}
+.sync-indicator {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--green); font-weight: 600;
+}
+.sync-dot {
+  width: 7px; height: 7px; background: var(--green);
+  border-radius: 50%; animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.4); }
+}
+#content { flex: 1; padding: 24px; }
+
+/*─────────────────────────────────────────────
+  COMMON UI ELEMENTS
+─────────────────────────────────────────────*/
+.card {
+  background: #fff; border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 20px;
+  margin-bottom: 20px; box-shadow: var(--shadow-sm);
+}
+.card-title {
+  font-size: 16px; font-weight: 700; color: var(--navy);
+  margin-bottom: 16px; padding-bottom: 12px;
+  border-bottom: 1px solid #eaf1fb;
+  display: flex; align-items: center; gap: 8px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; transition: all .2s; white-space: nowrap;
+}
+.btn-primary { background: var(--blue); color: #fff; }
+.btn-primary:hover { background: var(--navy); }
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover { background: #15763f; }
+.btn-danger  { background: var(--red);   color: #fff; }
+.btn-danger:hover  { background: #a0301f; }
+.btn-outline {
+  background: transparent; color: var(--blue);
+  border: 1.5px solid var(--blue);
+}
+.btn-outline:hover { background: var(--blue-pale); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn-gold { background: linear-gradient(135deg,#c9a227,#f0c940); color: var(--navy-dark); font-weight: 700; }
+.btn-gold:hover { opacity: .9; }
+
+.badge {
+  display: inline-block; padding: 3px 9px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+}
+.badge-blue   { background: var(--blue-pale); color: var(--blue); }
+.badge-green  { background: var(--green-bg);  color: var(--green); }
+.badge-red    { background: var(--red-bg);    color: var(--red); }
+.badge-orange { background: var(--orange-bg); color: var(--orange); }
+.badge-gold   { background: #fff8e1; color: #8a6b00; }
+.badge-purple { background: #f0eaff; color: var(--purple); }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  background: var(--bg); color: var(--text-muted);
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .6px; padding: 10px 12px; text-align: left;
+  border-bottom: 1.5px solid var(--border); white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid #f0f4f8; transition: background .15s; }
+tbody tr:hover { background: #f7faff; }
+tbody td { padding: 10px 12px; font-size: 13px; vertical-align: middle; }
+.empty-td { text-align: center; padding: 40px !important; color: var(--text-muted); }
+
+.form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+.form-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.form-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.form-row.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.f-group { display: flex; flex-direction: column; gap: 5px; }
+.f-group label { font-size: 12px; font-weight: 700; color: #2a4070; text-transform: uppercase; letter-spacing: .4px; }
+.f-group input, .f-group select, .f-group textarea {
+  padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; background: #f7faff; color: var(--text); outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.f-group input:focus, .f-group select:focus, .f-group textarea:focus {
+  border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(26,91,196,.1);
+}
+.f-group textarea { resize: vertical; min-height: 70px; }
+.f-readonly {
+  background: #f0f4f8 !important; color: var(--text-muted) !important;
+  cursor: not-allowed !important;
+}
+
+/* MODAL */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  z-index: 500; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: #fff; border-radius: 16px; padding: 28px; width: 100%; max-width: 560px;
+  box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
+  animation: fadeSlideUp .3s ease both;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-header h3 { font-size: 17px; font-weight: 700; color: var(--navy); }
+.modal-close {
+  background: none; border: none; font-size: 20px; cursor: pointer;
+  color: var(--text-muted); padding: 2px 6px; border-radius: 4px;
+}
+.modal-close:hover { background: var(--red-bg); color: var(--red); }
+
+/* TOAST */
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--navy-dark); color: #fff; padding: 12px 18px;
+  border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-md); animation: slideInRight .3s ease;
+  display: flex; align-items: center; gap: 8px; max-width: 320px;
+}
+.toast.success { background: var(--green); }
+.toast.error   { background: var(--red); }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/*─────────────────────────────────────────────
+  DASHBOARD
+─────────────────────────────────────────────*/
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+.stat-card {
+  background: #fff; border-radius: var(--radius); border: 1px solid var(--border);
+  padding: 20px; cursor: pointer; transition: box-shadow .2s, border-color .2s, transform .15s;
+  position: relative; overflow: hidden;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-light); transform: translateY(-2px); }
+.stat-card .stat-icon {
+  width: 42px; height: 42px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 12px; flex-shrink: 0;
+}
+.stat-card .stat-value { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
+.stat-card .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+.stat-card .stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+.dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+.recent-table tr td:first-child { font-size: 12px; color: var(--text-muted); }
+
+/* Simple bar chart */
+.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding-top: 10px; }
+.bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.bar {
+  width: 100%; border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg,var(--blue-light),var(--blue));
+  transition: height .6s cubic-bezier(.4,0,.2,1);
+  min-height: 2px;
+}
+.bar-label { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+.bar-val   { font-size: 10px; color: var(--navy); font-weight: 700; }
+
+/*─────────────────────────────────────────────
+  INVOICE
+─────────────────────────────────────────────*/
+.invoice-preview {
+  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 32px; max-width: 800px; margin: 0 auto;
+}
+.inv-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 24px; padding-bottom: 20px;
+  border-bottom: 2px solid var(--navy);
+}
+.inv-company h2 { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--navy); }
+.inv-company p  { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-top: 4px; }
+.inv-meta { text-align: right; }
+.inv-meta .inv-no {
+  font-size: 22px; font-weight: 800; color: var(--navy);
+  background: var(--blue-pale); padding: 6px 16px; border-radius: 8px; display: inline-block;
+}
+.inv-meta p { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+.inv-parties {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;
+}
+.inv-party { background: var(--bg); border-radius: 8px; padding: 14px 16px; }
+.inv-party h4 { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+.inv-party p  { font-size: 13px; color: var(--text); line-height: 1.6; }
+.inv-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.inv-table th {
+  background: var(--navy); color: #fff; font-size: 11px;
+  padding: 10px 12px; text-align: left; font-weight: 700;
+}
+.inv-table td { padding: 9px 12px; font-size: 13px; border-bottom: 1px solid #eaf1fb; }
+.inv-total-box { background: var(--bg); border-radius: 8px; padding: 16px 20px; max-width: 280px; margin-left: auto; }
+.inv-total-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.inv-total-row.grand { font-size: 16px; font-weight: 800; color: var(--navy); border-top: 1.5px solid var(--border); padding-top: 8px; margin-top: 4px; }
+.inv-footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); text-align: center; }
+
+/* FILTERS BAR */
+.filters-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.filters-bar input, .filters-bar select {
+  padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 13px; background: #fff; color: var(--text); outline: none;
+}
+.filters-bar input:focus, .filters-bar select:focus { border-color: var(--blue); }
+
+/* LEDGER */
+.ledger-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+.ledger-box { background: var(--bg); border-radius: var(--radius-sm); padding: 14px 16px; }
+.ledger-box .lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; font-weight: 600; margin-bottom: 4px; }
+.ledger-box .val { font-size: 20px; font-weight: 800; color: var(--navy); }
+
+/* GST REPORT */
+.gst-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.gst-box {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff; border-radius: var(--radius); padding: 18px 16px;
+}
+.gst-box .g-label { font-size: 11px; opacity: .75; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.gst-box .g-value { font-size: 22px; font-weight: 800; }
+.gst-box.alt { background: linear-gradient(135deg, #1a8c4e, #21a860); }
+.gst-box.alt2 { background: linear-gradient(135deg, #c9a227, #e0b030); color: var(--navy-dark); }
+.gst-box.alt3 { background: linear-gradient(135deg, #6c3fc5, #9060e0); }
+
+/* PERMISSION LOCK */
+.perm-lock {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--red-bg); border: 1px solid #f5b3ae;
+  color: #8b1a10; padding: 10px 14px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600; margin-bottom: 12px;
+}
+
+/*─────────────────────────────────────────────
+  RESPONSIVE
+─────────────────────────────────────────────*/
+@media (max-width: 1100px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .dash-grid { grid-template-columns: 1fr; }
+  .gst-summary { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  #main { margin-left: 0; }
+  #content { padding: 16px; }
+  #topbar { padding: 0 14px; }
+  .topbar-ham { display: block; }
+  .topbar-search { display: none; }
+  .topbar-badge { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .form-row.cols-3, .form-row.cols-4 { grid-template-columns: 1fr; }
+  .form-row.cols-2 { grid-template-columns: 1fr; }
+  .inv-header { flex-direction: column; gap: 16px; }
+  .inv-meta { text-align: left; }
+  .inv-parties { grid-template-columns: 1fr; }
+  .ledger-summary { grid-template-columns: 1fr; }
+  .gst-summary { grid-template-columns: 1fr 1fr; }
+  .modal { padding: 20px; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .gst-summary { grid-template-columns: 1fr; }
+}
+@media print {
+  #login-page, #sidebar, #topbar, .no-print { display: none !important; }
+  #main { margin-left: 0 !important; }
+  #content { padding: 0 !important; }
+  .invoice-preview { border: none !important; padding: 0 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  LOGIN PAGE                                    -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="login-page">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="gem-icon">💎</span>
+        <h1>Diyara Gems &amp; Jewels</h1>
+        <span class="role-badge">Accountant Portal</span>
+      </div>
+      <div class="login-divider"></div>
+      <div id="login-error" class="login-error">⚠️ Invalid username or password.</div>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="inp-user" placeholder="Enter username" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="inp-pass" placeholder="Enter password" autocomplete="current-password"/>
+      </div>
+      <button class="btn-login" onclick="doLogin()">🔐 Sign In to Accountant Portal</button>
+      <div class="login-hint">
+        Secure portal — restricted to Accountant role only
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  APP                                           -->
+<!-- ══════════════════════════════════════════════ -->
+<div id="app">
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="logo">
+      <h1>💎 Diyara Gems</h1>
+      <p>Accountant Portal</p>
+      <span class="role-tag">Accountant</span>
+    </div>
+    <nav>
+      <div class="nav-group">Main</div>
+      <button onclick="showPage('dashboard')" id="nav-dashboard"><span class="icon">📊</span> Dashboard</button>
+      <button onclick="showPage('inventory')" id="nav-inventory"><span class="icon">📦</span> Inventory</button>
+
+      <div class="nav-group">Transactions</div>
+      <button onclick="showPage('stock-movements')" id="nav-stock-movements"><span class="icon">🔄</span> Stock Movements</button>
+      <button onclick="showPage('inward')" id="nav-inward"><span class="icon">📥</span> Inward Entries</button>
+      <button onclick="showPage('outward')" id="nav-outward"><span class="icon">📤</span> Outward Entries</button>
+
+      <div class="nav-group">Finance</div>
+      <button onclick="showPage('billing')" id="nav-billing"><span class="icon">🧾</span> Billing / Invoice</button>
+      <button onclick="showPage('gst')" id="nav-gst"><span class="icon">📋</span> GST Report</button>
+      <button onclick="showPage('customer-ledger')" id="nav-customer-ledger"><span class="icon">👤</span> Customer Ledger</button>
+      <button onclick="showPage('vendor-ledger')" id="nav-vendor-ledger"><span class="icon">🏭</span> Vendor Ledger</button>
+
+      <div class="nav-group">Reports</div>
+      <button onclick="showPage('invoices')" id="nav-invoices"><span class="icon">📄</span> Saved Invoices</button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span id="sidebar-username">Accountant</span>
+        <small>Role: Accountant</small>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <button class="topbar-ham" onclick="openSidebar()">☰</button>
+      <div class="page-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-search">
+        <span>🔍</span>
+        <input type="text" id="global-search" placeholder="Search entries…" oninput="globalSearch(this.value)"/>
+      </div>
+      <div class="sync-indicator"><span class="sync-dot"></span> Live Sync</div>
+      <div class="topbar-badge">Accountant</div>
+      <button class="btn btn-outline btn-sm" onclick="window.location.href='stock.html'">Stock Manager</button>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Pricing Modal -->
+<div class="modal-backdrop" id="modal-pricing">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>💰 Enter Pricing Details</h3>
+      <button class="modal-close" onclick="closeModal('modal-pricing')">✕</button>
+    </div>
+    <div id="pricing-batch-info" style="background:var(--blue-pale);padding:12px 14px;border-radius:8px;margin-bottom:16px;font-size:13px;color:var(--navy);"></div>
+    <div class="form-row cols-2">
+      <div class="f-group"><label>Purchase Price (₹)</label><input type="number" id="p-purchase" placeholder="e.g. 500" min="0" step="0.01"/></div>
+      <div class="f-group"><label>Selling Price (₹)</label><input type="number" id="p-selling" placeholder="e.g. 750" min="0" step="0.01"/></div>
+    </div>
+    <div class="form-row cols-2">
+      <div class="f-group"><label>GST % </label><input type="number" id="p-gst" placeholder="e.g. 3" min="0" max="100" step="0.01"/></div>
+      <div class="f-group"><label>Discount %</label><input type="number" id="p-discount" placeholder="e.g. 5" min="0" max="100" step="0.01"/></div>
+    </div>
+    <div class="f-group" style="margin-bottom:16px;"><label>Notes</label><textarea id="p-notes" placeholder="Any accounting note…"></textarea></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-outline" onclick="closeModal('modal-pricing')">Cancel</button>
+      <button class="btn btn-success" onclick="savePricing()">💾 Save Pricing</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Generator Modal -->
+<div class="modal-backdrop" id="modal-invoice">
+  <div class="modal" style="max-width:860px;">
+    <div class="modal-header">
+      <h3>🧾 Generate Invoice</h3>
+      <button class="modal-close" onclick="closeModal('modal-invoice')">✕</button>
+    </div>
+    <div id="invoice-gen-content"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                    -->
+<!-- ══════════════════════════════════════════════ -->
+<script>
+'use strict';
+/*─────────────────────────────────────────────
+  CONSTANTS & STATE
+─────────────────────────────────────────────*/
+// Users (in real system this would be server-side)
+const USERS = {
+  accountant: { pass: 'acc@123',   role: 'accountant', name: 'Accountant' },
+  admin:      { pass: 'admin@123', role: 'admin',      name: 'Administrator' }
+};
+
+// API Configuration
+const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:3000/api' : '/api';
+let backendTransactions = [];
+
+let currentUser = null;
+let currentPage = 'dashboard';
+let pricingTarget = null; // batch being priced
+let invoiceTarget = null; // movement being invoiced
+let backendTransactionTarget = null; // transaction from backend being priced
+
+/*─────────────────────────────────────────────
+  SAMPLE SEED DATA (injects into localStorage if empty)
+─────────────────────────────────────────────*/
+function seedDemoData() {
+  // Only seed if stock.html data is absent
+  if (localStorage.getItem('diyara_batches')) return;
+
+  const batches = [
+    { batchId:'BATCH001', stoneType:'Round CZ', shape:'Round', size:'1.00mm', colour:'White', quality:'AAA', brand:'', qty:5000, reservedQty:200, vendor:'Vijay Gems', purchaseDate:'2025-01-10', notes:'' },
+    { batchId:'BATCH002', stoneType:'Marquise CZ', shape:'Marquise', size:'4x2mm', colour:'White', quality:'AA', brand:'', qty:2200, reservedQty:100, vendor:'Raj Jewels', purchaseDate:'2025-02-15', notes:'' },
+    { batchId:'BATCH003', stoneType:'Oval CZ', shape:'Oval', size:'6x4mm', colour:'Pink', quality:'AAA', brand:'', qty:800, reservedQty:50, vendor:'Mumbai Gems', purchaseDate:'2025-03-05', notes:'' },
+    { batchId:'BATCH004', stoneType:'Heart CZ', shape:'Heart', size:'5mm', colour:'Red', quality:'AA', brand:'', qty:450, reservedQty:0, vendor:'Star Diamonds', purchaseDate:'2025-04-01', notes:'' },
+    { batchId:'BATCH005', stoneType:'Princess CZ', shape:'Princess', size:'3mm', colour:'Blue', quality:'AAAA', brand:'', qty:1500, reservedQty:300, vendor:'Vijay Gems', purchaseDate:'2025-04-22', notes:'' },
+  ];
+  localStorage.setItem('diyara_batches', JSON.stringify(batches));
+
+  const movements = [
+    { id:'MVT001', date:'2025-05-01 09:30', batchId:'BATCH001', itemLabel:'Round CZ · Round 1.00mm White', stockType:'Purchase', qty:5000, asOnQty:5000, reserved:0, ref:'PO-2025-01', remark:'Initial stock', vendor:'Vijay Gems', customer:'' },
+    { id:'MVT002', date:'2025-05-03 11:00', batchId:'BATCH002', itemLabel:'Marquise CZ · Marquise 4x2mm White', stockType:'Purchase', qty:2200, asOnQty:2200, reserved:0, ref:'PO-2025-02', remark:'', vendor:'Raj Jewels', customer:'' },
+    { id:'MVT003', date:'2025-05-05 14:20', batchId:'BATCH001', itemLabel:'Round CZ · Round 1.00mm White', stockType:'Sale', qty:500, asOnQty:4500, reserved:0, ref:'SO-2025-01', remark:'Bulk order', vendor:'', customer:'Meena Jewellers' },
+    { id:'MVT004', date:'2025-05-08 10:00', batchId:'BATCH003', itemLabel:'Oval CZ · Oval 6x4mm Pink', stockType:'Purchase', qty:800, asOnQty:800, reserved:0, ref:'PO-2025-03', remark:'', vendor:'Mumbai Gems', customer:'' },
+    { id:'MVT005', date:'2025-05-10 15:30', batchId:'BATCH002', itemLabel:'Marquise CZ · Marquise 4x2mm White', stockType:'Sale', qty:300, asOnQty:1900, reserved:0, ref:'SO-2025-02', remark:'', vendor:'', customer:'Priya Gold' },
+    { id:'MVT006', date:'2025-05-12 09:00', batchId:'BATCH004', itemLabel:'Heart CZ · Heart 5mm Red', stockType:'Purchase', qty:450, asOnQty:450, reserved:0, ref:'PO-2025-04', remark:'', vendor:'Star Diamonds', customer:'' },
+    { id:'MVT007', date:'2025-05-14 13:00', batchId:'BATCH005', itemLabel:'Princess CZ · Princess 3mm Blue', stockType:'Purchase', qty:1500, asOnQty:1500, reserved:0, ref:'PO-2025-05', remark:'Special order', vendor:'Vijay Gems', customer:'' },
+    { id:'MVT008', date:'2025-05-15 16:00', batchId:'BATCH001', itemLabel:'Round CZ · Round 1.00mm White', stockType:'Sale', qty:200, asOnQty:4300, reserved:0, ref:'SO-2025-03', remark:'', vendor:'', customer:'Gold Palace' },
+    { id:'MVT009', date:'2025-05-18 11:30', batchId:'BATCH003', itemLabel:'Oval CZ · Oval 6x4mm Pink', stockType:'Sale', qty:100, asOnQty:700, reserved:0, ref:'SO-2025-04', remark:'', vendor:'', customer:'Meena Jewellers' },
+    { id:'MVT010', date:'2025-05-20 14:00', batchId:'BATCH005', itemLabel:'Princess CZ · Princess 3mm Blue', stockType:'Sale', qty:200, asOnQty:1300, reserved:0, ref:'SO-2025-05', remark:'', vendor:'', customer:'Priya Gold' },
+  ];
+  localStorage.setItem('diyara_sm_movements', JSON.stringify(movements));
+}
+
+/*─────────────────────────────────────────────
+  DATA HELPERS
+─────────────────────────────────────────────*/
+function readLocalJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null || raw === undefined || raw === '') return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed === null || parsed === undefined ? fallback : parsed;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+function getBatches()    { return readLocalJson('diyara_batches', []); }
+function getMovements()  { return readLocalJson('diyara_sm_movements', []); }
+function getPricing()    { return readLocalJson('diyara_acc_pricing', {}); }
+function getInvoices()   { return readLocalJson('diyara_acc_invoices', []); }
+
+function savePricingData(data) { localStorage.setItem('diyara_acc_pricing', JSON.stringify(data)); }
+function saveInvoicesData(data){ localStorage.setItem('diyara_acc_invoices', JSON.stringify(data)); }
+
+function getPriceFor(batchId) {
+  return getPricing()[batchId] || { purchase:0, selling:0, gst:3, discount:0, notes:'' };
+}
+
+/*─────────────────────────────────────────────
+  BACKEND TRANSACTIONS (Stock Manager ↔ Accountant)
+─────────────────────────────────────────────*/
+async function fetchTransactionsFromBackend() {
+  try {
+    const response = await fetch(API_BASE + '/transactions');
+    if (!response.ok) throw new Error('Failed to fetch transactions');
+    backendTransactions = await response.json();
+    return backendTransactions;
+  } catch (e) {
+    console.warn('Backend fetch failed:', e.message);
+    return [];
+  }
+}
+
+async function savePriceToBackend(transactionId, purchasePrice, salePrice, gst, discount, notes) {
+  try {
+    const response = await fetch(API_BASE + '/transactions/' + transactionId + '/price', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        purchasePrice: Number(purchasePrice) || 0,
+        salePrice: Number(salePrice) || 0,
+        gst: Number(gst) || 0,
+        discount: Number(discount) || 0,
+        notes: notes || ''
+      })
+    });
+    if (!response.ok) throw new Error('Failed to save price');
+    return await response.json();
+  } catch (e) {
+    console.warn('Backend save failed:', e.message);
+    return null;
+  }
+}
+
+function getPriceFor(batchId) {
+  return getPricing()[batchId] || { purchase:0, selling:0, gst:3, discount:0, notes:'' };
+}
+
+const formatINR = n => '₹' + Number(n||0).toLocaleString('en-IN', {minimumFractionDigits:2,maximumFractionDigits:2});
+const formatNum = n => Number(n||0).toLocaleString('en-IN');
+const today = () => new Date().toLocaleDateString('en-IN');
+const genInvNo = () => 'INV-' + Date.now().toString().slice(-6);
+
+/*─────────────────────────────────────────────
+  AUTH
+─────────────────────────────────────────────*/
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim().toLowerCase();
+  const p = document.getElementById('inp-pass').value;
+  const user = USERS[u];
+  if (user && user.pass === p) {
+    currentUser = { ...user, username: u };
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('sidebar-username').textContent = user.name;
+    showPage('dashboard');
+    toast('Welcome back, ' + user.name + '!', 'success');
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+function doLogout() {
+  currentUser = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-page').style.display = 'flex';
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+// Enter key on login
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('login-page').style.display !== 'none') doLogin();
+});
+
+/*─────────────────────────────────────────────
+  NAVIGATION
+─────────────────────────────────────────────*/
+const PAGE_TITLES = {
+  dashboard:'Dashboard', inventory:'Inventory',
+  'stock-movements':'Stock Movements from Stock Manager',
+  inward:'Inward Entries', outward:'Outward Entries',
+  billing:'Billing / Invoice', gst:'GST Report',
+  'customer-ledger':'Customer Ledger', 'vendor-ledger':'Vendor Ledger',
+  invoices:'Saved Invoices'
+};
+function showPage(page) {
+  currentPage = page;
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[page] || page;
+  document.querySelectorAll('#sidebar nav button').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + page);
+  if (nb) nb.classList.add('active');
+  closeSidebar();
+  const c = document.getElementById('content');
+  const renders = {
+    dashboard: renderDashboard, inventory: renderInventory,
+    'stock-movements': renderStockMovements,
+    inward: renderInward, outward: renderOutward,
+    billing: renderBilling, gst: renderGST,
+    'customer-ledger': renderCustomerLedger, 'vendor-ledger': renderVendorLedger,
+    invoices: renderSavedInvoices
+  };
+  if (renders[page]) renders[page](c);
+}
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').classList.remove('open'); }
+
+/*─────────────────────────────────────────────
+  TOAST
+─────────────────────────────────────────────*/
+function toast(msg, type='') {
+  const div = document.createElement('div');
+  div.className = 'toast ' + type;
+  div.textContent = msg;
+  document.getElementById('toast-container').appendChild(div);
+  setTimeout(() => div.remove(), 3200);
+}
+
+/*─────────────────────────────────────────────
+  MODAL HELPERS
+─────────────────────────────────────────────*/
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+/*─────────────────────────────────────────────
+  GLOBAL SEARCH (simple filter, re-render)
+─────────────────────────────────────────────*/
+function globalSearch(q) {
+  // Just re-render current page; each page reads the search value
+  showPage(currentPage);
+}
+
+/*─────────────────────────────────────────────
+  PAGE: DASHBOARD
+─────────────────────────────────────────────*/
+async function renderDashboard(c) {
+  const batches = getBatches();
+  const pricing = getPricing();
+  const invoices = getInvoices();
+  const backendTransactions = await fetchTransactionsFromBackend();
+  const movements = backendTransactions.length ? backendTransactions.map(t => ({
+    id: t._id,
+    date: t.date || today(),
+    batchId: t.batchId,
+    itemLabel: t.stone || `${t.shape || ''} ${t.size || ''} ${t.colour || ''}`.trim(),
+    stockType: t.type === 'inward' ? 'Purchase' : 'Sale',
+    qty: t.qty,
+    asOnQty: 0,
+    reserved: 0,
+    ref: t.ref || '',
+    remark: t.notes || '',
+    vendor: t.type === 'inward' ? (t.vendor || 'Stock Manager') : '',
+    customer: t.type === 'outward' ? (t.customer || 'Customer') : ''
+  })) : getMovements();
+
+  const inward  = movements.filter(m => ['Purchase','Return','Release'].includes(m.stockType));
+  const outward = movements.filter(m => ['Sale','Adjustment'].includes(m.stockType));
+  const totalInward  = inward.reduce((s,m) => s + m.qty, 0);
+  const totalOutward = outward.reduce((s,m) => s + m.qty, 0);
+  const totalInventory = batches.reduce((s,b) => s + Number(b.qty||0), 0);
+
+  // Revenue calc from outward movements with pricing
+  let totalRevenue = 0, totalGST = 0, pendingBillings = 0;
+  outward.forEach(m => {
+    const pr = pricing[m.batchId] || {};
+    if (pr.selling) {
+      const base = pr.selling * m.qty;
+      const disc = base * (pr.discount||0)/100;
+      const taxable = base - disc;
+      const gst = taxable * (pr.gst||0)/100;
+      totalRevenue += taxable + gst;
+      totalGST += gst;
+    } else {
+      pendingBillings++;
+    }
+  });
+
+  // Monthly data for chart (last 6 months)
+  const monthsMap = {};
+  outward.forEach(m => {
+    const d = new Date(m.date);
+    if (isNaN(d)) return;
+    const key = d.toLocaleString('en-IN', {month:'short'});
+    monthsMap[key] = (monthsMap[key] || 0) + m.qty;
+  });
+  const months = Object.entries(monthsMap).slice(-6);
+  const maxQ = Math.max(...months.map(x=>x[1]), 1);
+
+  const recent = movements.slice(0,8);
+
+  c.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card" onclick="showPage('inventory')">
+        <div class="stat-icon" style="background:#e8f0fb;color:var(--blue)">📦</div>
+        <div class="stat-value">${formatNum(totalInventory)}</div>
+        <div class="stat-label">Total Inventory (pcs)</div>
+        <div class="stat-sub">${batches.length} batches</div>
+      </div>
+      <div class="stat-card" onclick="showPage('inward')">
+        <div class="stat-icon" style="background:var(--green-bg);color:var(--green)">📥</div>
+        <div class="stat-value">${formatNum(totalInward)}</div>
+        <div class="stat-label">Total Inward (pcs)</div>
+        <div class="stat-sub">${inward.length} entries</div>
+      </div>
+      <div class="stat-card" onclick="showPage('outward')">
+        <div class="stat-icon" style="background:var(--red-bg);color:var(--red)">📤</div>
+        <div class="stat-value">${formatNum(totalOutward)}</div>
+        <div class="stat-label">Total Outward (pcs)</div>
+        <div class="stat-sub">${outward.length} entries</div>
+      </div>
+      <div class="stat-card" onclick="showPage('billing')">
+        <div class="stat-icon" style="background:#fff8e1;color:#8a6b00">🧾</div>
+        <div class="stat-value">${pendingBillings}</div>
+        <div class="stat-label">Pending Pricing</div>
+        <div class="stat-sub">Entries awaiting price</div>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--green-bg);color:var(--green)">💰</div>
+        <div class="stat-value" style="font-size:20px;">${formatINR(totalRevenue)}</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f0eaff;color:var(--purple)">📋</div>
+        <div class="stat-value" style="font-size:20px;">${formatINR(totalGST)}</div>
+        <div class="stat-label">Total GST Collected</div>
+      </div>
+      <div class="stat-card" onclick="showPage('invoices')">
+        <div class="stat-icon" style="background:#fff8e1;color:#8a6b00">📄</div>
+        <div class="stat-value">${invoices.length}</div>
+        <div class="stat-label">Saved Invoices</div>
+      </div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-title">📈 Monthly Outward (pcs)</div>
+        ${months.length ? `
+        <div class="bar-chart">
+          ${months.map(([mo,qty])=>`
+            <div class="bar-wrap">
+              <div class="bar-val">${qty>999?(qty/1000).toFixed(1)+'k':qty}</div>
+              <div class="bar" style="height:${Math.round(qty/maxQ*100)}px;"></div>
+              <div class="bar-label">${mo}</div>
+            </div>
+          `).join('')}
+        </div>` : '<p style="color:var(--text-muted);padding:20px 0;">No outward data yet.</p>'}
+      </div>
+      <div class="card">
+        <div class="card-title">📦 Inventory Summary</div>
+        ${batches.slice(0,5).map(b=>{
+          const pr = pricing[b.batchId] || {};
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f0f4f8;">
+            <div>
+              <div style="font-weight:600;font-size:13px;">${b.stoneType||'—'}</div>
+              <div style="font-size:11px;color:var(--text-muted);">${b.shape} ${b.size} ${b.colour}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;color:var(--navy);">${formatNum(b.qty)} pcs</div>
+              ${pr.selling ? `<div style="font-size:11px;color:var(--green);">${formatINR(pr.selling)}/pc</div>` : `<span class="badge badge-orange">No Price</span>`}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔄 Recent Transactions</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Item</th><th>Type</th><th>Qty</th><th>Party</th><th>Ref</th><th>Price Status</th></tr></thead>
+          <tbody>
+            ${recent.length ? recent.map(m=>{
+              const pr = getPricing()[m.batchId] || {};
+              const hasPr = !!pr.selling;
+              const isOut = ['Sale','Adjustment'].includes(m.stockType);
+              const isIn  = ['Purchase','Return','Release'].includes(m.stockType);
+              return `<tr>
+                <td style="font-size:12px;color:var(--text-muted);">${m.date}</td>
+                <td><div style="font-weight:600;font-size:13px;">${m.itemLabel}</div><div style="font-size:11px;color:var(--text-muted);">${m.batchId}</div></td>
+                <td><span class="badge ${isIn?'badge-green':isOut?'badge-red':'badge-blue'}">${m.stockType}</span></td>
+                <td style="font-weight:700;">${formatNum(m.qty)}</td>
+                <td style="font-size:12px;">${m.vendor||m.customer||m.ref||'—'}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${m.ref||'—'}</td>
+                <td>${hasPr ? `<span class="badge badge-green">✓ Priced</span>` : `<span class="badge badge-orange">⚠ No Price</span>`}</td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="7" class="empty-td">No transactions yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  PAGE: INVENTORY
+─────────────────────────────────────────────*/
+function renderInventory(c) {
+  const batches = getBatches();
+  const pricing = getPricing();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+
+  const filtered = batches.filter(b => !q || [b.batchId,b.stoneType,b.shape,b.size,b.colour,b.quality,b.vendor].some(v=>(v||'').toLowerCase().includes(q)));
+
+  c.innerHTML = `
+    <div class="perm-lock">🔒 Read-only: You can view inventory but cannot modify stock quantities.</div>
+    <div class="card">
+      <div class="card-title">📦 Inventory (${filtered.length} batches)</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search batches…" oninput="filterInventory(this.value)" id="inv-search" value="${q}" style="flex:1;max-width:280px;"/>
+        <select onchange="filterInventory()">
+          <option>All Types</option>
+          ${[...new Set(batches.map(b=>b.stoneType||''))].filter(Boolean).map(t=>`<option>${t}</option>`).join('')}
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Batch ID</th><th>Stone Type</th><th>Shape</th><th>Size</th><th>Colour</th><th>Quality</th><th>Stock</th><th>Reserved</th><th>Vendor</th><th>Purchase Price</th><th>Selling Price</th><th>GST%</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((b,i)=>{
+              const pr = pricing[b.batchId] || {};
+              const margin = pr.purchase && pr.selling ? ((pr.selling-pr.purchase)/pr.purchase*100).toFixed(1) : null;
+              return `<tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td><span class="badge badge-blue">${b.batchId}</span></td>
+                <td style="font-weight:600;">${b.stoneType||'—'}</td>
+                <td>${b.shape||'—'}</td>
+                <td>${b.size||'—'}</td>
+                <td>${b.colour||'—'}</td>
+                <td><span class="badge badge-purple">${b.quality||'—'}</span></td>
+                <td style="font-weight:700;color:var(--navy);">${formatNum(b.qty)}</td>
+                <td style="color:var(--orange);">${formatNum(b.reservedQty||0)}</td>
+                <td style="font-size:12px;">${b.vendor||'—'}</td>
+                <td style="color:var(--blue);font-weight:600;">${pr.purchase ? formatINR(pr.purchase) : '<span class="badge badge-orange">Not set</span>'}</td>
+                <td style="color:var(--green);font-weight:600;">${pr.selling ? formatINR(pr.selling) : '<span class="badge badge-orange">Not set</span>'}</td>
+                <td>${pr.gst!=null && pr.gst!==undefined && pr.gst!=='' ? pr.gst+'%' : '—'}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="openPricingModal('${b.batchId}')">💰 Set Price</button></td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="14" class="empty-td">No batches found.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+function filterInventory(val) {
+  const inp = document.getElementById('inv-search');
+  if (inp && val !== undefined) inp.value = val;
+  renderInventory(document.getElementById('content'));
+}
+
+/*─────────────────────────────────────────────
+  PAGE: STOCK MOVEMENTS (Backend Transactions)
+─────────────────────────────────────────────*/
+async function renderStockMovements(c) {
+  c.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">⏳ Loading stock movements...</div>';
+  
+  const transactions = await fetchTransactionsFromBackend();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+  const typeFilter = (document.getElementById('sm-type-filter')?.value||'');
+  const statusFilter = (document.getElementById('sm-status-filter')?.value||'');
+  
+  let filtered = transactions.filter(t => {
+    const matchSearch = !q || [t.stone, t.colour, t.shape, t.batchId].some(v=>(v||'').toLowerCase().includes(q));
+    const matchType = !typeFilter || t.type === typeFilter;
+    const matchStatus = !statusFilter || t.status === statusFilter;
+    return matchSearch && matchType && matchStatus;
+  });
+
+  const inward = filtered.filter(t => t.type === 'inward');
+  const outward = filtered.filter(t => t.type === 'outward');
+  const pending = filtered.filter(t => t.status === 'pending');
+
+  c.innerHTML = `
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--green-bg);color:var(--green)">📥</div>
+        <div class="stat-value">${inward.length}</div>
+        <div class="stat-label">Inward Movements</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--red-bg);color:var(--red)">📤</div>
+        <div class="stat-value">${outward.length}</div>
+        <div class="stat-label">Outward Movements</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fff8e1;color:#8a6b00">⏳</div>
+        <div class="stat-value">${pending.length}</div>
+        <div class="stat-label">Pending Pricing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--blue-pale);color:var(--blue)">✅</div>
+        <div class="stat-value">${filtered.filter(t=>t.status==='priced').length}</div>
+        <div class="stat-label">Priced Entries</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-title">🔄 Stock Movements from Stock Manager</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search…" oninput="document.getElementById('global-search').value=this.value;renderStockMovements(document.getElementById('content'));" value="${q}" style="flex:1;max-width:280px;"/>
+        <select id="sm-type-filter" onchange="renderStockMovements(document.getElementById('content'))">
+          <option value="">All Types</option>
+          <option value="inward">Inward</option>
+          <option value="outward">Outward</option>
+        </select>
+        <select id="sm-status-filter" onchange="renderStockMovements(document.getElementById('content'))">
+          <option value="">All Status</option>
+          <option value="pending">Pending Price</option>
+          <option value="priced">Priced</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Batch ID</th><th>Type</th><th>Source</th><th>Ref</th><th>Stone</th><th>Colour</th><th>Shape</th><th>Size</th><th>Qty</th><th>Purchase Price</th><th>Sale Price</th><th>GST%</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((t,i)=>`
+              <tr${t.status === 'pending' ? ' style="background:#fffbf0;"' : ''}>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-size:12px;white-space:nowrap;">${t.date || '—'}</td>
+                <td><span class="badge badge-blue">${t.batchId}</span></td>
+                <td><span class="badge ${t.type==='inward'?'badge-green':'badge-red'}">${t.type.toUpperCase()}</span></td>
+                <td>${t.source === 'stock_manager' ? 'Stock Manager' : t.source || 'System'}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${t.ref || '—'}</td>
+                <td style="font-weight:600;">${t.stone || '—'}</td>
+                <td>${t.colour || '—'}</td>
+                <td>${t.shape || '—'}</td>
+                <td>${t.size || '—'}</td>
+                <td style="font-weight:700;color:var(--blue);">${t.qty || '—'}</td>
+                <td style="color:var(--green);">${t.purchasePrice && t.purchasePrice > 0 ? formatINR(t.purchasePrice) : '<span class="badge badge-orange">Not set</span>'}</td>
+                <td style="color:var(--blue);">${t.salePrice && t.salePrice > 0 ? formatINR(t.salePrice) : '—'}</td>
+                <td>${t.gst !== null && t.gst !== undefined && t.gst !== '' ? t.gst+'%' : '—'}</td>
+                <td><span class="badge ${t.status==='pending'?'badge-orange':'badge-green'}">${t.status.toUpperCase()}</span></td>
+                <td><button class="btn btn-primary btn-sm" onclick="openBackendPricingModal('${t._id}','${t.batchId}')">💰 Price</button></td>
+              </tr>
+            `).join('') : `<tr><td colspan="16" class="empty-td">No stock movements found.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  PAGE: INWARD
+─────────────────────────────────────────────*/
+async function renderInward(c) {
+  const backendTransactions = await fetchTransactionsFromBackend();
+  const backendMovements = backendTransactions
+    .filter(t => t.type === 'inward')
+    .map(t => ({
+      id: t._id,
+      transactionId: t._id,
+      date: t.date || today(),
+      batchId: t.batchId,
+      itemLabel: t.stone || `${t.shape || ''} ${t.size || ''} ${t.colour || ''}`.trim(),
+      stockType: 'Purchase',
+      qty: t.qty,
+      asOnQty: 0,
+      reserved: 0,
+      ref: t.ref || '',
+      remark: t.notes || '',
+      vendor: t.vendor || 'Stock Manager',
+      customer: ''
+    }));
+  const movements = backendMovements;
+  const pricing = getPricing();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+  const filtered = movements.filter(m => !q || [m.itemLabel,m.batchId,m.ref,m.vendor,m.remark].some(v=>(v||'').toLowerCase().includes(q)));
+
+  let totalQty = 0, totalCost = 0;
+  filtered.forEach(m => { totalQty += m.qty; const pr = pricing[m.batchId]||{}; if(pr.purchase) totalCost += pr.purchase * m.qty; });
+
+  c.innerHTML = `
+    <div class="perm-lock">🔒 Read-only: Stock quantities are managed by the Stock Manager.</div>
+    <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stat-card"><div class="stat-icon" style="background:var(--green-bg);color:var(--green)">📥</div><div class="stat-value">${filtered.length}</div><div class="stat-label">Inward Entries</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--blue-pale);color:var(--blue)">📦</div><div class="stat-value">${formatNum(totalQty)}</div><div class="stat-label">Total Qty (pcs)</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#fff8e1;color:#8a6b00">💰</div><div class="stat-value" style="font-size:18px;">${formatINR(totalCost)}</div><div class="stat-label">Total Cost Value</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📥 All Inward Entries</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search…" oninput="document.getElementById('global-search').value=this.value;renderInward(document.getElementById('content'));" value="${q}" style="flex:1;max-width:280px;"/>
+        <select id="inward-type-filter" onchange="renderInward(document.getElementById('content'))">
+          <option value="">All Types</option>
+          <option>Purchase</option><option>Return</option><option>Release</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Batch ID</th><th>Item</th><th>Type</th><th>Qty</th><th>Stock After</th><th>Vendor</th><th>Ref</th><th>Purchase Price</th><th>Cost Value</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((m,i)=>{
+              const pr = pricing[m.batchId]||{};
+              const cost = pr.purchase ? pr.purchase * m.qty : null;
+              return `<tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-size:12px;white-space:nowrap;">${m.date}</td>
+                <td><span class="badge badge-blue">${m.batchId}</span></td>
+                <td style="font-size:13px;font-weight:600;">${m.itemLabel}</td>
+                <td><span class="badge badge-green">${m.stockType}</span></td>
+                <td style="font-weight:700;color:var(--green);">+${formatNum(m.qty)}</td>
+                <td style="color:var(--blue);font-weight:600;">${formatNum(m.asOnQty)}</td>
+                <td style="font-size:12px;">${m.vendor||'—'}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${m.ref||'—'}</td>
+                <td style="color:var(--blue);">${pr.purchase ? formatINR(pr.purchase)+'/pc' : '<span class="badge badge-orange">Not set</span>'}</td>
+                <td style="font-weight:700;">${cost ? formatINR(cost) : '—'}</td>
+                <td style="display:flex;gap:6px;">
+                  ${m.transactionId ? `<button class="btn btn-primary btn-sm" onclick="openBackendPricingModal('${m.transactionId}','${m.batchId}')">💰 Price</button>` : `<button class="btn btn-primary btn-sm" onclick="openPricingModal('${m.batchId}')">💰 Price</button>`}
+                  ${pr.purchase ? `<button class="btn btn-gold btn-sm" onclick="openInvoiceModal('${m.transactionId||m.id}')">🖨️ Invoice</button>` : ''}
+                </td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="12" class="empty-td">No inward entries.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  PAGE: OUTWARD
+─────────────────────────────────────────────*/
+async function renderOutward(c) {
+  const backendTransactions = await fetchTransactionsFromBackend();
+  const backendMovements = backendTransactions
+    .filter(t => t.type === 'outward')
+    .map(t => ({
+      id: t._id,
+      transactionId: t._id,
+      date: t.date || today(),
+      batchId: t.batchId,
+      itemLabel: t.stone || `${t.shape || ''} ${t.size || ''} ${t.colour || ''}`.trim(),
+      stockType: 'Sale',
+      qty: t.qty,
+      asOnQty: 0,
+      reserved: 0,
+      ref: t.ref || '',
+      remark: t.notes || '',
+      vendor: '',
+      customer: t.customer || 'Customer'
+    }));
+  const movements = backendMovements;
+  const pricing = getPricing();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+  const filtered = movements.filter(m => !q || [m.itemLabel,m.batchId,m.ref,m.customer,m.remark].some(v=>(v||'').toLowerCase().includes(q)));
+
+  let totalQty=0, totalRev=0, totalGST=0;
+  filtered.forEach(m=>{
+    totalQty+=m.qty;
+    const pr=pricing[m.batchId]||{};
+    if(pr.selling){ const base=pr.selling*m.qty; const disc=base*(pr.discount||0)/100; const taxable=base-disc; const gst=taxable*(pr.gst||0)/100; totalRev+=taxable+gst; totalGST+=gst; }
+  });
+
+  c.innerHTML = `
+    <div class="perm-lock">🔒 Read-only: Outward entries are created by the Stock Manager.</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon" style="background:var(--red-bg);color:var(--red)">📤</div><div class="stat-value">${filtered.length}</div><div class="stat-label">Outward Entries</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--blue-pale);color:var(--blue)">📦</div><div class="stat-value">${formatNum(totalQty)}</div><div class="stat-label">Total Qty (pcs)</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:var(--green-bg);color:var(--green)">💰</div><div class="stat-value" style="font-size:18px;">${formatINR(totalRev)}</div><div class="stat-label">Total Revenue</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:#f0eaff;color:var(--purple)">📋</div><div class="stat-value" style="font-size:18px;">${formatINR(totalGST)}</div><div class="stat-label">GST Collected</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📤 All Outward Entries</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search…" oninput="document.getElementById('global-search').value=this.value;renderOutward(document.getElementById('content'));" value="${q}" style="flex:1;max-width:280px;"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Batch</th><th>Item</th><th>Type</th><th>Qty</th><th>Customer</th><th>Ref</th><th>Selling/pc</th><th>GST%</th><th>Total</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((m,i)=>{
+              const pr=pricing[m.batchId]||{};
+              let total='—', gstAmt='—';
+              if(pr.selling){ const base=pr.selling*m.qty; const disc=base*(pr.discount||0)/100; const taxable=base-disc; const g=taxable*(pr.gst||0)/100; total=formatINR(taxable+g); gstAmt=formatINR(g); }
+              return `<tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-size:12px;white-space:nowrap;">${m.date}</td>
+                <td><span class="badge badge-blue">${m.batchId}</span></td>
+                <td style="font-weight:600;font-size:13px;">${m.itemLabel}</td>
+                <td><span class="badge badge-red">${m.stockType}</span></td>
+                <td style="font-weight:700;color:var(--red);">-${formatNum(m.qty)}</td>
+                <td style="font-size:12px;">${m.customer||m.vendor||'—'}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${m.ref||'—'}</td>
+                <td style="color:var(--green);">${pr.selling ? formatINR(pr.selling) : '<span class="badge badge-orange">Not set</span>'}</td>
+                <td>${pr.gst!=null && pr.gst!==''?pr.gst+'%':'—'}</td>
+                <td style="font-weight:700;">${total}</td>
+                <td style="display:flex;gap:6px;">
+                  ${m.transactionId ? `<button class="btn btn-primary btn-sm" onclick="openBackendPricingModal('${m.transactionId}','${m.batchId}')">💰</button>` : `<button class="btn btn-primary btn-sm" onclick="openPricingModal('${m.batchId}')">💰</button>`}
+                  ${pr.selling ? `<button class="btn btn-gold btn-sm" onclick="openInvoiceModal('${m.transactionId||m.id}')">🖨️ Invoice</button>` : ''}
+                </td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="12" class="empty-td">No outward entries.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  PRICING MODAL
+─────────────────────────────────────────────*/
+function openPricingModal(batchId) {
+  pricingTarget = batchId;
+  const b = getBatches().find(x=>x.batchId===batchId)||{};
+  const pr = getPriceFor(batchId);
+  document.getElementById('pricing-batch-info').innerHTML =
+    `<b>${b.stoneType||batchId}</b> · ${b.shape||''} ${b.size||''} ${b.colour||''} <span class="badge badge-blue">${batchId}</span>`;
+  document.getElementById('p-purchase').value = pr.purchase||'';
+  document.getElementById('p-selling').value  = pr.selling||'';
+  document.getElementById('p-gst').value      = pr.gst!=null ? pr.gst : 3;
+  document.getElementById('p-discount').value = pr.discount||'';
+  document.getElementById('p-notes').value    = pr.notes||'';
+  openModal('modal-pricing');
+}
+
+// Backend Transaction Pricing Modal
+function openBackendPricingModal(transactionId, batchId) {
+  backendTransactionTarget = transactionId;
+  const transaction = backendTransactions.find(t => t._id === transactionId) || {};
+  const partyInfo = transaction.customer ? `Customer: ${transaction.customer}` : transaction.vendor ? `Vendor: ${transaction.vendor}` : '';
+  document.getElementById('pricing-batch-info').innerHTML =
+    `<b>${transaction.stone || batchId}</b> · ${transaction.shape || ''} ${transaction.size || ''} ${transaction.colour || ''} <span class="badge badge-${transaction.type==='inward'?'green':'red'}">${transaction.type.toUpperCase()}</span>${partyInfo ? ` · <span style="font-size:12px;color:var(--text-muted);">${partyInfo}</span>` : ''}`;
+  document.getElementById('p-purchase').value = transaction.purchasePrice || '';
+  document.getElementById('p-selling').value  = transaction.salePrice || '';
+  document.getElementById('p-gst').value      = transaction.gst !== null ? transaction.gst : 0;
+  document.getElementById('p-discount').value = transaction.discount || '';
+  document.getElementById('p-notes').value    = transaction.notes || '';
+  openModal('modal-pricing');
+}
+
+async function savePricing() {
+  // If this is a backend transaction, save to backend
+  if (backendTransactionTarget) {
+    const purchase = parseFloat(document.getElementById('p-purchase').value)||0;
+    const selling  = parseFloat(document.getElementById('p-selling').value)||0;
+    const gst      = parseFloat(document.getElementById('p-gst').value)||0;
+    const discount = parseFloat(document.getElementById('p-discount').value)||0;
+    const notes    = document.getElementById('p-notes').value.trim();
+    
+    if (!purchase && !selling) { 
+      toast('Please enter at least a purchase or selling price.', 'error'); 
+      return; 
+    }
+    
+    const result = await savePriceToBackend(backendTransactionTarget, purchase, selling, gst, discount, notes);
+    if (result) {
+      await fetchTransactionsFromBackend();
+      closeModal('modal-pricing');
+      toast('Pricing saved to backend!', 'success');
+      const savedTransactionId = backendTransactionTarget;
+      backendTransactionTarget = null;
+      renderStockMovements(document.getElementById('content'));
+      if (currentPage === 'billing') renderBilling(document.getElementById('content'));
+      openInvoiceModal(savedTransactionId);
+    } else {
+      toast('Failed to save pricing.', 'error');
+    }
+    return;
+  }
+  
+  // Otherwise save to localStorage (original behavior)
+  const purchase = parseFloat(document.getElementById('p-purchase').value)||0;
+  const selling  = parseFloat(document.getElementById('p-selling').value)||0;
+  const gst      = parseFloat(document.getElementById('p-gst').value)||0;
+  const discount = parseFloat(document.getElementById('p-discount').value)||0;
+  const notes    = document.getElementById('p-notes').value.trim();
+  if (!selling) { toast('Please enter at least a selling price.', 'error'); return; }
+  const pricing = getPricing();
+  pricing[pricingTarget] = { purchase, selling, gst, discount, notes, updatedAt: new Date().toISOString() };
+  savePricingData(pricing);
+  closeModal('modal-pricing');
+  toast('Pricing saved for ' + pricingTarget + '!', 'success');
+  showPage(currentPage);
+}
+
+/*─────────────────────────────────────────────
+  PAGE: BILLING / INVOICE GENERATOR
+─────────────────────────────────────────────*/
+async function renderBilling(c) {
+  const transactions = await fetchTransactionsFromBackend();
+  const movements = transactions.filter(t => t.type === 'outward');
+  const pricing = getPricing();
+  const unpriced = movements.filter(m => !m.salePrice);
+
+  c.innerHTML = `
+    ${unpriced.length ? `<div style="background:var(--orange-bg);border:1px solid #ffcc80;border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--orange);font-weight:600;">⚠️ ${unpriced.length} outward movements have no pricing set. Set prices to generate invoices.</div>` : ''}
+    <div class="card">
+      <div class="card-title">🧾 Invoice Generator — Select Outward Movement</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Batch</th><th>Item</th><th>Qty</th><th>Customer</th><th>Ref</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            ${movements.length ? movements.map((m,i)=>{
+              const ready = m.salePrice && m.salePrice > 0;
+              return `<tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-size:12px;white-space:nowrap;">${m.date||'—'}</td>
+                <td><span class="badge badge-blue">${m.batchId}</span></td>
+                <td style="font-weight:600;font-size:13px;">${m.stone || '—'}</td>
+                <td style="font-weight:700;">${formatNum(m.qty)}</td>
+                <td style="font-size:12px;">${m.customer||'—'}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${m.ref||'—'}</td>
+                <td>${ready ? `<span class="badge badge-green">✓ Ready</span>` : `<span class="badge badge-orange">No Price</span>`}</td>
+                <td style="display:flex;gap:6px;">
+                  ${!ready ? `<button class="btn btn-primary btn-sm" onclick="openBackendPricingModal('${m._id}','${m.batchId}')">💰 Set Price</button>` : ''}
+                  ${ready ? `<button class="btn btn-gold btn-sm" onclick="openInvoiceModal('${m._id}')">🧾 Generate</button>` : ''}
+                </td>
+              </tr>`;
+            }).join('') : `<tr><td colspan="9" class="empty-td">No outward movements found.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  INVOICE MODAL
+─────────────────────────────────────────────*/
+function openInvoiceModal(mvtId) {
+  const transaction = backendTransactions.find(x => x._id === mvtId);
+  let m, pr, b;
+  if (transaction) {
+    m = {
+      id: transaction._id,
+      date: transaction.date || today(),
+      batchId: transaction.batchId,
+      itemLabel: transaction.stone || `${transaction.shape || ''} ${transaction.size || ''} ${transaction.colour || ''}`,
+      qty: transaction.qty,
+      customer: transaction.customer || 'Customer',
+      ref: transaction.ref || '',
+      stockType: transaction.type === 'outward' ? 'Sale' : 'Purchase'
+    };
+    pr = {
+      purchase: transaction.purchasePrice || 0,
+      selling: transaction.salePrice || 0,
+      gst: transaction.gst || 0,
+      discount: transaction.discount || 0
+    };
+    b = getBatches().find(x => x.batchId === transaction.batchId) || {};
+  } else {
+    m = getMovements().find(x=>x.id===mvtId);
+    if (!m) return;
+    b = getBatches().find(x=>x.batchId===m.batchId)||{};
+    pr = getPriceFor(m.batchId);
+  }
+
+  const invNo = genInvNo();
+  const base = pr.selling * m.qty;
+  const disc = base * (pr.discount||0)/100;
+  const taxable = base - disc;
+  const gstAmt = taxable * (pr.gst||0)/100;
+  const grand = taxable + gstAmt;
+  invoiceTarget = { m, b, pr, invNo, base, disc, taxable, gstAmt, grand };
+
+  document.getElementById('invoice-gen-content').innerHTML = `
+    <div class="invoice-preview" id="inv-printable" style="background:#fff;color:#222;padding:20px;font-family:Arial,Helvetica,sans-serif;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+        <div style="max-width:60%;">
+          <div style="font-size:22px;font-weight:900;color:#b71c1c;">DIYARA GEMS &amp; JEWELS</div>
+          <div style="font-size:11px;line-height:1.4;margin-top:6px;">WHOLESALE, RETAIL &amp; EXPORT<br/>Opp. Malad Railway Station, Malad (W), Mumbai<br/>Mob: 9819872021 | mayurgems@gmail.com</div>
+          <div style="margin-top:8px;font-size:11px;">GSTIN: 27ABCDE1234F1Z5</div>
+        </div>
+        <div style="text-align:right;min-width:160px;">
+          <div style="font-size:14px;font-weight:700;margin-bottom:10px;">DELIVERY CHALLAN / INVOICE</div>
+          <div style="font-size:12px;line-height:1.5;"><strong>No:</strong> ${invNo}<br/><strong>Date:</strong> ${today()}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:12px;">
+        <div style="width:48%;border:1px solid #ccc;padding:10px;">
+          <div style="font-weight:700;margin-bottom:6px;">To</div>
+          <div>${m.customer||'Customer Name'}</div>
+          <div>${m.ref||'Reference not provided'}</div>
+        </div>
+        <div style="width:48%;border:1px solid #ccc;padding:10px;">
+          <div style="font-weight:700;margin-bottom:6px;">Description of Goods</div>
+          <div>${b.stoneType||m.itemLabel}</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead>
+            <tr style="background:#f7f1ef;color:#333;font-weight:700;">
+              <th style="border:1px solid #999;padding:8px;">Sr No</th>
+              <th style="border:1px solid #999;padding:8px;">Shapes</th>
+              <th style="border:1px solid #999;padding:8px;">Size</th>
+              <th style="border:1px solid #999;padding:8px;">Colours</th>
+              <th style="border:1px solid #999;padding:8px;">Qty Pcs/Pts</th>
+              <th style="border:1px solid #999;padding:8px;">Weight</th>
+              <th style="border:1px solid #999;padding:8px;">Rate Pcs</th>
+              <th style="border:1px solid #999;padding:8px;">Amount In Rs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="border:1px solid #999;padding:8px;text-align:center;">1</td>
+              <td style="border:1px solid #999;padding:8px;">${b.shape||transaction?.shape||'—'}</td>
+              <td style="border:1px solid #999;padding:8px;">${b.size||transaction?.size||'—'}</td>
+              <td style="border:1px solid #999;padding:8px;">${b.colour||transaction?.colour||'—'}</td>
+              <td style="border:1px solid #999;padding:8px;text-align:right;">${formatNum(m.qty)}</td>
+              <td style="border:1px solid #999;padding:8px;text-align:right;">${b.weight || '—'}</td>
+              <td style="border:1px solid #999;padding:8px;text-align:right;">${formatINR(pr.selling)}</td>
+              <td style="border:1px solid #999;padding:8px;text-align:right;">${formatINR(base)}</td>
+            </tr>
+            <tr>
+              <td colspan="8" style="border:1px solid #999;padding:8px;height:40px;">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:12px;">
+        <div style="width:60%;line-height:1.5;">
+          <div><strong>Terms:</strong> Goods once sold will not be taken back or exchanged. Subject to Malad jurisdiction.</div>
+          <div style="margin-top:10px;">Received the goods in good condition as per above details. For Diyara Gems &amp; Jewels</div>
+        </div>
+        <div style="width:40%;border:1px solid #999;padding:10px;font-size:12px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Subtotal</span><span>${formatINR(base)}</span></div>
+          ${pr.discount ? `<div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Discount (${pr.discount}%)</span><span>- ${formatINR(disc)}</span></div>` : ''}
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Taxable Amt</span><span>${formatINR(taxable)}</span></div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>GST (${pr.gst||0}%)</span><span>${formatINR(gstAmt)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;font-size:14px;border-top:1px solid #999;padding-top:6px;"><span>Grand Total</span><span>${formatINR(grand)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;" class="no-print">
+      <button class="btn btn-outline" onclick="window.print()">🖨️ Print</button>
+      <button class="btn btn-success" onclick="saveInvoice()">💾 Save Invoice</button>
+      <button class="btn btn-gold" onclick="downloadPDF()">📥 Download PDF</button>
+    </div>`;
+  openModal('modal-invoice');
+}
+
+function saveInvoice() {
+  if (!invoiceTarget) return;
+  const invs = getInvoices();
+  invs.unshift({ ...invoiceTarget, savedAt: new Date().toISOString() });
+  saveInvoicesData(invs);
+  closeModal('modal-invoice');
+  toast('Invoice ' + invoiceTarget.invNo + ' saved!', 'success');
+}
+
+function downloadPDF() {
+  if (!invoiceTarget) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+  const { m, b, pr, invNo, base, disc, taxable, gstAmt, grand } = invoiceTarget;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(20); doc.setTextColor(10,45,110);
+  doc.text('Diyara Gems & Jewels', 14, 20);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(100,120,160);
+  doc.text('Mumbai, Maharashtra, India | GST: 27ABCDE1234F1Z5', 14, 27);
+  doc.setFontSize(14); doc.setFont('helvetica','bold'); doc.setTextColor(10,45,110);
+  doc.text(invNo, 150, 20);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(100,120,160);
+  doc.text('Date: ' + today(), 150, 27);
+  doc.setDrawColor(10,45,110); doc.setLineWidth(.5);
+  doc.line(14, 32, 196, 32);
+  doc.setFontSize(11); doc.setTextColor(26,35,64);
+  doc.setFont('helvetica','bold'); doc.text('Bill To:', 14, 40);
+  doc.setFont('helvetica','normal'); doc.text(m.customer||'Customer', 14, 46);
+  doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('#', 14, 62); doc.text('Description', 22, 62); doc.text('Qty', 120, 62); doc.text('Rate', 145, 62); doc.text('Amount', 170, 62);
+  doc.line(14, 64, 196, 64);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text('1', 14, 72); doc.text((b.stoneType||m.itemLabel).substring(0,35), 22, 72);
+  doc.text(String(m.qty), 120, 72); doc.text('Rs.' + pr.selling, 145, 72); doc.text('Rs.' + base.toFixed(2), 170, 72);
+  doc.line(14, 76, 196, 76);
+  let y = 86;
+  if(pr.discount){ doc.text('Discount (' + pr.discount + '%):', 130, y); doc.text('-Rs.' + disc.toFixed(2), 170, y); y+=7; }
+  doc.text('Taxable Amount:', 130, y); doc.text('Rs.' + taxable.toFixed(2), 170, y); y+=7;
+  doc.text('GST (' + (pr.gst||0) + '%):', 130, y); doc.text('Rs.' + gstAmt.toFixed(2), 170, y); y+=7;
+  doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(10,45,110);
+  doc.text('Grand Total:', 130, y+2); doc.text('Rs.' + grand.toFixed(2), 170, y+2);
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(130,145,165);
+  doc.text('Thank you for your business! | Diyara Gems & Jewels', 14, 270);
+  doc.save(invNo + '_Diyara.pdf');
+  toast('PDF Downloaded: ' + invNo, 'success');
+}
+
+/*─────────────────────────────────────────────
+  PAGE: GST REPORT
+─────────────────────────────────────────────*/
+function renderGST(c) {
+  const movements = getMovements().filter(m=>['Sale','Adjustment'].includes(m.stockType));
+  const pricing = getPricing();
+
+  let totalSales=0, totalTaxable=0, totalGST=0, totalWithGST=0;
+  const rows = movements.map(m=>{
+    const pr=pricing[m.batchId]||{};
+    if(!pr.selling) return null;
+    const base=pr.selling*m.qty;
+    const disc=base*(pr.discount||0)/100;
+    const taxable=base-disc;
+    const gstAmt=taxable*(pr.gst||0)/100;
+    const grand=taxable+gstAmt;
+    totalSales+=base; totalTaxable+=taxable; totalGST+=gstAmt; totalWithGST+=grand;
+    return { m, pr, base, disc, taxable, gstAmt, grand };
+  }).filter(Boolean);
+
+  // Group by GST rate
+  const gstGroups = {};
+  rows.forEach(r => {
+    const rate = r.pr.gst||0;
+    if (!gstGroups[rate]) gstGroups[rate] = { taxable:0, gst:0, count:0 };
+    gstGroups[rate].taxable += r.taxable;
+    gstGroups[rate].gst += r.gstAmt;
+    gstGroups[rate].count++;
+  });
+
+  c.innerHTML = `
+    <div class="gst-summary">
+      <div class="gst-box"><div class="g-label">Total Sales</div><div class="g-value">${formatINR(totalSales)}</div></div>
+      <div class="gst-box alt"><div class="g-label">Taxable Value</div><div class="g-value">${formatINR(totalTaxable)}</div></div>
+      <div class="gst-box alt2"><div class="g-label">GST Collected</div><div class="g-value">${formatINR(totalGST)}</div></div>
+      <div class="gst-box alt3"><div class="g-label">Total with GST</div><div class="g-value">${formatINR(totalWithGST)}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-title">📊 GST Rate Summary</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>GST Rate</th><th>No. of Entries</th><th>Taxable Amount</th><th>GST Amount</th><th>Total</th></tr></thead>
+          <tbody>
+            ${Object.entries(gstGroups).length ? Object.entries(gstGroups).map(([rate,g])=>`
+              <tr>
+                <td><span class="badge badge-purple">${rate}%</span></td>
+                <td>${g.count}</td>
+                <td style="font-weight:600;">${formatINR(g.taxable)}</td>
+                <td style="font-weight:700;color:var(--orange);">${formatINR(g.gst)}</td>
+                <td style="font-weight:700;color:var(--navy);">${formatINR(g.taxable+g.gst)}</td>
+              </tr>`) .join('') : `<tr><td colspan="5" class="empty-td">No GST data. Add pricing with GST rates first.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Detailed GST Transactions</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Date</th><th>Batch</th><th>Customer</th><th>Qty</th><th>Base Amt</th><th>Discount</th><th>Taxable</th><th>GST%</th><th>GST Amt</th><th>Grand Total</th></tr></thead>
+          <tbody>
+            ${rows.length ? rows.map((r,i)=>`
+              <tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-size:12px;">${r.m.date}</td>
+                <td><span class="badge badge-blue">${r.m.batchId}</span></td>
+                <td style="font-size:12px;">${r.m.customer||r.m.vendor||'—'}</td>
+                <td>${formatNum(r.m.qty)}</td>
+                <td>${formatINR(r.base)}</td>
+                <td style="color:var(--green);">${r.disc ? formatINR(r.disc) : '—'}</td>
+                <td style="font-weight:600;">${formatINR(r.taxable)}</td>
+                <td><span class="badge badge-gold">${r.pr.gst||0}%</span></td>
+                <td style="font-weight:700;color:var(--orange);">${formatINR(r.gstAmt)}</td>
+                <td style="font-weight:800;color:var(--navy);">${formatINR(r.grand)}</td>
+              </tr>`) .join('')
+              : `<tr><td colspan="11" class="empty-td">No GST entries yet. Price outward entries first.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/*─────────────────────────────────────────────
+  PAGE: CUSTOMER LEDGER
+─────────────────────────────────────────────*/
+function renderCustomerLedger(c) {
+  const movements = getMovements().filter(m=>['Sale','Adjustment'].includes(m.stockType));
+  const pricing = getPricing();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+
+  // Group by customer
+  const ledger = {};
+  movements.forEach(m=>{
+    const cust = m.customer || 'Unknown';
+    if (!ledger[cust]) ledger[cust] = { name:cust, entries:[], total:0, gst:0 };
+    ledger[cust].entries.push(m);
+    const pr=pricing[m.batchId]||{};
+    if(pr.selling){ const base=pr.selling*m.qty; const disc=base*(pr.discount||0)/100; const taxable=base-disc; const g=taxable*(pr.gst||0)/100; ledger[cust].total+=taxable+g; ledger[cust].gst+=g; }
+  });
+
+  const filtered = Object.values(ledger).filter(l => !q || l.name.toLowerCase().includes(q));
+  const [selected] = filtered;
+
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-title">👤 Customer Ledger</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search customer…" value="${q}" oninput="document.getElementById('global-search').value=this.value;renderCustomerLedger(document.getElementById('content'));" style="flex:1;max-width:280px;"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Customer Name</th><th>Total Transactions</th><th>Total Qty</th><th>Total Value</th><th>GST Paid</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((l,i)=>`
+              <tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-weight:700;">${l.name}</td>
+                <td>${l.entries.length}</td>
+                <td>${formatNum(l.entries.reduce((s,m)=>s+m.qty,0))}</td>
+                <td style="font-weight:700;color:var(--green);">${formatINR(l.total)}</td>
+                <td style="color:var(--orange);">${formatINR(l.gst)}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="expandLedger('customer','${l.name}')">View Ledger</button></td>
+              </tr>`) .join('') : `<tr><td colspan="7" class="empty-td">No customers found.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="ledger-detail"></div>`;
+}
+
+function renderVendorLedger(c) {
+  const movements = getMovements().filter(m=>['Purchase','Return'].includes(m.stockType));
+  const pricing = getPricing();
+  const q = (document.getElementById('global-search')?.value||'').toLowerCase();
+
+  const ledger = {};
+  movements.forEach(m=>{
+    const vend = m.vendor || 'Unknown';
+    if (!ledger[vend]) ledger[vend] = { name:vend, entries:[], total:0 };
+    ledger[vend].entries.push(m);
+    const pr=pricing[m.batchId]||{};
+    if(pr.purchase) ledger[vend].total += pr.purchase * m.qty;
+  });
+
+  const filtered = Object.values(ledger).filter(l => !q || l.name.toLowerCase().includes(q));
+
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-title">🏭 Vendor Ledger</div>
+      <div class="filters-bar">
+        <input type="text" placeholder="🔍 Search vendor…" value="${q}" oninput="document.getElementById('global-search').value=this.value;renderVendorLedger(document.getElementById('content'));" style="flex:1;max-width:280px;"/>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Vendor Name</th><th>Total Orders</th><th>Total Qty</th><th>Total Purchase Value</th><th>Action</th></tr></thead>
+          <tbody>
+            ${filtered.length ? filtered.map((l,i)=>`
+              <tr>
+                <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+                <td style="font-weight:700;">${l.name}</td>
+                <td>${l.entries.length}</td>
+                <td>${formatNum(l.entries.reduce((s,m)=>s+m.qty,0))}</td>
+                <td style="font-weight:700;color:var(--blue);">${formatINR(l.total)}</td>
+                <td><button class="btn btn-primary btn-sm" onclick="expandLedger('vendor','${l.name}')">View Ledger</button></td>
+              </tr>`) .join('') : `<tr><td colspan="6" class="empty-td">No vendors found.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="ledger-detail"></div>`;
+}
+
+function expandLedger(type, name) {
+  const movements = getMovements().filter(m => type==='customer' ? (m.customer===name) : (m.vendor===name));
+  const pricing = getPricing();
+  const d = document.getElementById('ledger-detail');
+  if (!d) return;
+  d.innerHTML = `
+    <div class="card">
+      <div class="card-title">${type==='customer'?'👤':'🏭'} ${name} — Detailed Ledger</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Date</th><th>Batch</th><th>Item</th><th>Type</th><th>Qty</th><th>Rate</th><th>Amount</th><th>Ref</th></tr></thead>
+          <tbody>
+            ${movements.map(m=>{
+              const pr=pricing[m.batchId]||{};
+              const rate = type==='customer' ? pr.selling : pr.purchase;
+              const amt  = rate ? formatINR(rate*m.qty) : '—';
+              const isIn = ['Purchase','Return','Release'].includes(m.stockType);
+              return `<tr>
+                <td style="font-size:12px;">${m.date}</td>
+                <td><span class="badge badge-blue">${m.batchId}</span></td>
+                <td style="font-size:13px;">${m.itemLabel}</td>
+                <td><span class="badge ${isIn?'badge-green':'badge-red'}">${m.stockType}</span></td>
+                <td style="font-weight:700;">${formatNum(m.qty)}</td>
+                <td>${rate ? formatINR(rate) : '—'}</td>
+                <td style="font-weight:700;">${amt}</td>
+                <td style="font-size:12px;color:var(--text-muted);">${m.ref||'—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  d.scrollIntoView({behavior:'smooth'});
+}
+
+/*─────────────────────────────────────────────
+  PAGE: SAVED INVOICES
+─────────────────────────────────────────────*/
+function renderSavedInvoices(c) {
+  const invs = getInvoices();
+  c.innerHTML = `
+    <div class="card">
+      <div class="card-title">📄 Saved Invoices (${invs.length})</div>
+      ${!invs.length ? `<p class="empty-td">No invoices saved yet. Generate from Billing page.</p>` : `
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Invoice No.</th><th>Date Saved</th><th>Customer</th><th>Item</th><th>Qty</th><th>Grand Total</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${invs.map((inv,i)=>`<tr>
+              <td style="color:var(--text-muted);font-size:12px;">${i+1}</td>
+              <td><span class="badge badge-gold">${inv.invNo}</span></td>
+              <td style="font-size:12px;">${new Date(inv.savedAt).toLocaleDateString('en-IN')}</td>
+              <td style="font-weight:600;">${inv.m?.customer||'—'}</td>
+              <td style="font-size:13px;">${inv.m?.itemLabel||'—'}</td>
+              <td>${formatNum(inv.m?.qty||0)}</td>
+              <td style="font-weight:700;color:var(--green);">${formatINR(inv.grand||0)}</td>
+              <td><button class="btn btn-gold btn-sm" onclick="reDownloadPDF(${i})">📥 PDF</button></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`}
+    </div>`;
+}
+
+function reDownloadPDF(idx) {
+  const inv = getInvoices()[idx];
+  if (!inv) return;
+  invoiceTarget = inv;
+  downloadPDF();
+}
+
+/*─────────────────────────────────────────────
+  AUTO-SYNC: Listen for localStorage changes
+─────────────────────────────────────────────*/
+window.addEventListener('storage', e => {
+  if (['diyara_batches','diyara_sm_movements'].includes(e.key)) {
+    toast('📦 Stock Manager updated inventory. Refreshing…');
+    showPage(currentPage);
+  }
+});
+
+/*─────────────────────────────────────────────
+  INIT
+─────────────────────────────────────────────*/
+seedDemoData();
+localStorage.removeItem('diyara_acc_invoices');
+</script>
+</body>
+</html>

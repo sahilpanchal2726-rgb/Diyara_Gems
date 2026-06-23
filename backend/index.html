@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diyara Gems - Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #f7f1e6 0%, #f3ece1 100%);
+      color: #2b1a0f;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 48px 20px;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: 3rem;
+      color: #5b381c;
+    }
+    .hero p {
+      color: #6d5a49;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      display: block;
+      background: #fffdfa;
+      border: 1px solid #e7d9bd;
+      border-radius: 18px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 10px 24px rgba(61, 41, 18, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(61, 41, 18, 0.14);
+    }
+    .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .card h2 { margin: 0 0 10px; font-size: 1.5rem; }
+    .card p { margin: 0; color: #6d5a49; line-height: 1.5; }
+    .stock .tag { background: #f6e9d2; color: #8a5a21; }
+    .account .tag { background: #dff4ec; color: #0f7a5f; }
+    .super .tag { background: #efe3ff; color: #6a36a8; }
+    .admin .tag { background: #dde7ff; color: #3557c7; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="hero">
+      <h1>Diyara Gems</h1>
+      <p>Select a section to continue.</p>
+    </section>
+    <section class="grid">
+      <a class="card stock" href="./stock.html">
+        <span class="tag">Stock</span>
+        <h2>Stock Manager</h2>
+        <p>Manage inventory, QR labels, and stock updates.</p>
+      </a>
+      <a class="card account" href="./account.html">
+        <span class="tag">Account</span>
+        <h2>Account</h2>
+        <p>Review accounts and related records.</p>
+      </a>
+      <a class="card super" href="./super.html">
+        <span class="tag">Super</span>
+        <h2>Super Admin</h2>
+        <p>Open advanced management tools.</p>
+      </a>
+      <a class="card admin" href="./admin.html">
+        <span class="tag">Admin</span>
+        <h2>Admin</h2>
+        <p>Access admin controls and settings.</p>
+      </a>
+    </section>
+  </main>
+</body>
+</html>
